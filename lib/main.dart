@@ -4,7 +4,7 @@ import 'package:echo_note/Pages/canvas_page/canvaspage.dart';
 import 'package:echo_note/Pages/ui/scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'Pages/canvas_page/canvas.dart';
+import 'Pages/canvas_page/pen_canvas.dart';
 import 'Pages/note_page/notepage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
@@ -34,8 +34,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(CanvasController());
     return MaterialApp(
+      // debugShowCheckedModeBanner: false,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       scrollBehavior: EchoScrollBehavior(),
@@ -68,7 +68,7 @@ class MainApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.grey.shade900,
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.blue.shade900,
+          backgroundColor: const Color.fromARGB(255, 26, 53, 93), // AppBar 背景颜色
           foregroundColor: Colors.white,
           elevation: 4,
         ),

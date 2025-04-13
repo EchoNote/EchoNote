@@ -56,7 +56,7 @@ class AddNoteButton extends StatelessWidget {
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
-            elevation: 0,
+            elevation: .1,
             onSelected: _onSelected,
             child: Icon(Icons.add, color: Colors.white, size: 32),
           ),

@@ -1,39 +1,62 @@
+import 'package:echo_note/Pages/canvas_page/multi_canvas.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'canvas.dart';
+import 'pen_canvas.dart';
 
 class Touch extends StatelessWidget {
-  Touch({super.key});
-  final controller = Get.find<CanvasController>(); // 获取控制器实例
+  const Touch({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var multiCanvasController = Get.put(MultiCanvasController());
     return Listener(
       onPointerDown: (event) {
-        debugPrint('Pointer down: ${event.localPosition}');
-        if (controller.onlyStylus) {
+        if (PenCanvasController.onlyStylus) {
           if (event.kind == PointerDeviceKind.stylus) {
-            controller.addPoint(event.localPosition);
+            
+            multiCanvasController.penCanvasController.addPoint(
+              event.localPosition,
+              event.pressure,
+              0,
+            );
           }
         } else {
-          controller.addPoint(event.localPosition);
+          multiCanvasController.penCanvasController.addPoint(event.localPosition, event.pressure, 0);
         }
       },
 
       onPointerMove: (event) {
-        debugPrint('Pointer move: ${event.localPosition}');
-        if (controller.onlyStylus) {
+        if (PenCanvasController.onlyStylus) {
           if (event.kind == PointerDeviceKind.stylus) {
-            controller.addPoint(event.localPosition);
+            multiCanvasController.penCanvasController.addPoint(
+              event.localPosition,
+              event.pressure,
+              0,
+            );
           }
         } else {
-          controller.addPoint(event.localPosition);
+          multiCanvasController.penCanvasController.addPoint(event.localPosition, event.pressure, 0);
         }
       },
-      
 
-      child: UserCanvas(),
+      onPointerUp: (event) {
+        if (PenCanvasController.onlyStylus) {
+          if (event.kind == PointerDeviceKind.stylus) {
+            multiCanvasController.penCanvasController.addPoint(
+              event.localPosition,
+              event.pressure,
+              0,
+            );
+            multiCanvasController.penCanvasController.addBreak();
+          }
+        } else {
+          multiCanvasController.penCanvasController.addPoint(event.localPosition, event.pressure, 0);
+          multiCanvasController.penCanvasController.addBreak();
+        }
+      },
+
+      child: MultiCanvas(),
     );
   }
 }
