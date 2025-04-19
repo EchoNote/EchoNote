@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:echo_note/Pages/canvas_page/canvaspage.dart';
+import 'package:echo_note/Pages/canvas_page/multi_canvas.dart';
 import 'package:echo_note/Pages/ui/scroll.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 void main() {
+  MultiCanvasController(tag: 0);
   WidgetsFlutterBinding.ensureInitialized();
 
   // 设置状态栏和导航栏透明沉浸
@@ -36,6 +38,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: true,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       scrollBehavior: EchoScrollBehavior(),

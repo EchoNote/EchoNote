@@ -7,6 +7,6 @@ class CanvasPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Touch();
+    return Touch(tag: 0,);
   }
 }

@@ -2,95 +2,105 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
-import 'pen_canvas.dart';
+import 'package:echo_note/component/stroke/pen.dart';
 import 'background_canvas.dart';
+import 'pen_canvas.dart';
+import 'pen_canvas_static.dart';
+import 'dart:ui' as ui;
 
 class MultiCanvas extends StatelessWidget {
-  MultiCanvas({super.key});
+  final int tag;
+  const MultiCanvas({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
-    MultiCanvasController controller = Get.find<MultiCanvasController>();
-    return Obx(() => Stack(children:controller.canvases.value));
+    MultiCanvasController controller = Get.find<MultiCanvasController>(
+      tag: tag.toString(),
+    );
+    return Stack(
+      children: [
+        const BackgroundCanvas(),
+
+        Obx(() {
+          final picture = controller.penCanvasStaticController.get0();
+          return RepaintBoundary(
+            child: PenCanvasStatic(
+              staticCanvasUpdateCount:
+                  controller
+                      .penCanvasStaticController
+                      .staticCanvasUpdateCount
+                      .value,
+              picture: picture,
+            ),
+          );
+        }),
+
+        Obx(
+          () => RepaintBoundary(
+            child: PenCanvas(
+              points: controller.penCanvasController.points.toList(),
+              pen: controller.penCanvasController.pen,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class MultiCanvasController extends GetxController {
-  RxList<Widget> canvases = <Widget>[BackgroundCanvas()].obs;
-  final List<Pen> pens = [PenCanvasController.genPen()];
-  static const int maxPointCountForPenCanvas = 1000;
-  static const int _periodicCheckInterval = 1000; // 3 second
-  late PenCanvasController _penCanvasController;
+  final int tag;
+  late final PenCanvasStaticController penCanvasStaticController;
+  late final PenCanvasController penCanvasController;
+  static const int _maxCount = 50;
+  static const int _checkMinDuration = 5000; // 至少五秒才检查
+  bool _allowCheck = true;
+  bool get allowCheck => _allowCheck;
 
-  @override
-  void onInit() {
-    super.onInit();
-    addCanvas(
-      PenCanvasController.genPen(),
-    ); // 加入一个默认画布，用与debug，后续需要加入真实的画笔之后再删除
-    Timer.periodic(const Duration(milliseconds: _periodicCheckInterval), (
-      timer,
-    ) {
-      check();
-    });
+  MultiCanvasController({required this.tag}) {
+    Get.put(this, tag: tag.toString());
+    Get.put(
+      penCanvasStaticController = PenCanvasStaticController(tag: tag),
+      tag: tag.toString(),
+    );
+    Get.put(
+      penCanvasController = PenCanvasController(tag: tag),
+      tag: tag.toString(),
+    );
   }
 
-  void addCanvas(Pen pen) {
-    if (pens.last.id > pen.id) {
-      return;
-    }
-
-    if (pens.length >= 2) { // 0: background, 1: default pen, 2: 
-     canvases.last = RepaintBoundary(
-      child: PenCanvas(
-        points: _penCanvasController.points.toList(),
-        pen: pens.last,
-      ),
-    );
-    }
-  
-    var tmpController = Get.put(PenCanvasController(), tag: pen.id.toString());
-
-    canvases.add(
-      RepaintBoundary(
-        child: Obx(
-          () => PenCanvas(
-            pen: pen,
-            points: List.unmodifiable(tmpController.points),
-          ),
-        ),
-      ),
-    );
-
-    pens.add(pen);
-
-    _penCanvasController = tmpController;
+  void merge() {
+    penCanvasStaticController.merge();
+    penCanvasController.clear();
+    debugPrint("merge");
   }
 
-  void removeCanvas(int id) {
-    for (int i = 0; i < pens.length; i++) {
-      if (pens[i].id == id) {
-        canvases.removeAt(i); // Remove the canvas widget
-        pens.removeAt(i); // Remove the pen from the list
-        break;
-      }
-    }
+  void setPen(Pen pen) {
+    merge();
+    penCanvasStaticController.pen = pen;
+    penCanvasController.pen = pen;
+  }
 
-    Get.delete<PenCanvasController>(tag: id.toString());
+  void addPoint(Point point) {
+    penCanvasController.addPoint(point);
+    penCanvasStaticController.addPoint(point);
+  }
+
+  void addBreak() {
+    penCanvasController.addBreak();
+    penCanvasStaticController.addBreak();
   }
 
   void check() {
-    debugPrint("cheched points count: ${_penCanvasController.pointCount}");
-    if (pens.length <= 1) {
-      return;
+    if (!_allowCheck) return;
+    _allowCheck = false;
+    debugPrint("check");
+    if (penCanvasController.pointCount > _maxCount) {
+      merge();
     }
 
-    if (_penCanvasController.pointCount >= maxPointCountForPenCanvas) {
-      addCanvas(pens.last.copy());
-    }
-  }
-
-  PenCanvasController get penCanvasController {
-    return _penCanvasController;
+    Timer(const Duration(milliseconds: _checkMinDuration), () {
+      _allowCheck = true;
+    });
   }
 }

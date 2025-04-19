@@ -1,0 +1,95 @@
+// 将不同的pen_canvas叠加起来
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'dart:async';
+import 'pen_canvas.dart';
+import 'background_canvas.dart';
+
+class MultiCanvas extends StatelessWidget {
+  MultiCanvas({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    MultiCanvasController controller = Get.find<MultiCanvasController>();
+    return Obx(() => Stack(children:controller.canvases.value));
+  }
+}
+
+class MultiCanvasController extends GetxController {
+  RxList<Widget> canvases = <Widget>[BackgroundCanvas()].obs;
+  final List<Pen> pens = [PenCanvasController.genPen()];
+  static const int maxPointCountForPenCanvas = 1000;
+  static const int _periodicCheckInterval = 1000; // 3 second
+  late PenCanvasController _penCanvasController;
+
+  @override
+  void onInit() {
+    super.onInit();
+    addCanvas(
+      PenCanvasController.genPen(),
+    ); // 加入一个默认画布，用与debug，后续需要加入真实的画笔之后再删除
+    // Timer.periodic(const Duration(milliseconds: _periodicCheckInterval), (
+    //   timer,
+    // ) {
+    //   check();
+    // });
+  }
+
+  void addCanvas(Pen pen) {
+    if (pens.last.id > pen.id) {
+      return;
+    }
+
+    if (pens.length >= 2) { // 0: background, 1: default pen, 2: 
+     canvases.last = RepaintBoundary(
+      child: PenCanvas(
+        points: _penCanvasController.points.toList(),
+        pen: pens.last,
+      ),
+    );
+    }
+  
+    var tmpController = Get.put(PenCanvasController(), tag: pen.id.toString());
+
+    canvases.add(
+      RepaintBoundary(
+        child: Obx(
+          () => PenCanvas(
+            pen: pen,
+            points: List.unmodifiable(tmpController.points),
+          ),
+        ),
+      ),
+    );
+
+    pens.add(pen);
+
+    _penCanvasController = tmpController;
+  }
+
+  void removeCanvas(int id) {
+    for (int i = 0; i < pens.length; i++) {
+      if (pens[i].id == id) {
+        canvases.removeAt(i); // Remove the canvas widget
+        pens.removeAt(i); // Remove the pen from the list
+        break;
+      }
+    }
+
+    Get.delete<PenCanvasController>(tag: id.toString());
+  }
+
+  void check() {
+    if (pens.length <= 1) {
+      return;
+    }
+
+    if (_penCanvasController.pointCount >= maxPointCountForPenCanvas) {
+      addCanvas(pens.last.copy());
+    }
+  }
+
+  PenCanvasController get penCanvasController {
+    return _penCanvasController;
+  }
+}
