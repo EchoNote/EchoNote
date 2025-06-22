@@ -57,10 +57,15 @@ class NoteRect extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 5),
-                Icon(
-                  Icons.more_vert,
-                  color: const Color.fromARGB(255, 201, 184, 23),
-                  size: 16,
+                IconButton(
+                  onPressed: () {
+                    print("aaa");
+                  },
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: const Color.fromARGB(255, 201, 184, 23),
+                    size: 16,
+                  ),
                 ),
               ],
             ),

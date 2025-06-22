@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:echo_note/Pages/canvas_page/canvaspage.dart';
@@ -7,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Pages/canvas_page/pen_canvas.dart';
 import 'Pages/note_page/notepage.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
+import 'dart:ui' as ui;
 
-void main() {
+void main() async {
   MultiCanvasController(tag: 0);
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -38,9 +39,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: true,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      // showPerformanceOverlay: true,
       scrollBehavior: EchoScrollBehavior(),
 
       // 浅色设置
@@ -77,8 +76,8 @@ class MainApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system, // 跟随系统
-      // home: NotePage(),
-      home: const CanvasPage(), // 画布页面
+      // home: const CanvasPage(),
+      home: const NotePage(),
     );
   }
 }

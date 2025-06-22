@@ -1,8 +1,0 @@
-{
-    "@@locale": "zh",
-    "@@author": "Echo",
-    "helloWorld": "你好，世界！",
-    "@helloWorld": {},
-    "notes": "笔记",
-    "@notes": {}
-}

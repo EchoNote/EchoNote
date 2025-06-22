@@ -1,4 +1,6 @@
+import 'package:echo_note/Pages/note_page/note_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // 用于打开添加笔记菜单的按键
 class AddNoteButton extends StatelessWidget {
@@ -13,27 +15,27 @@ class AddNoteButton extends StatelessWidget {
       ),
     ),
 
-    const PopupMenuItem<String>(
-      value: 'borderless',
-      child: Row(
-        children: [
-          Icon(Icons.all_inclusive_outlined),
-          SizedBox(width: 10),
-          Text('无界笔记'),
-        ],
-      ),
-    ),
+    // const PopupMenuItem<String>(
+    //   value: 'borderless',
+    //   child: Row(
+    //     children: [
+    //       Icon(Icons.all_inclusive_outlined),
+    //       SizedBox(width: 10),
+    //       Text('无界笔记'),
+    //     ],
+    //   ),
+    // ),
 
-    const PopupMenuItem<String>(
-      value: 'pdf',
-      child: Row(
-        children: [
-          Icon(Icons.picture_as_pdf_rounded),
-          SizedBox(width: 10),
-          Text('PDF笔记'),
-        ],
-      ),
-    ),
+    // const PopupMenuItem<String>(
+    //   value: 'pdf',
+    //   child: Row(
+    //     children: [
+    //       Icon(Icons.picture_as_pdf_rounded),
+    //       SizedBox(width: 10),
+    //       Text('PDF笔记'),
+    //     ],
+    //   ),
+    // ),
   ];
 
   @override
@@ -78,13 +80,19 @@ class AddNoteButton extends StatelessWidget {
   // TODO: 添加对应的笔记类型
   void _normal() {
     debugPrint("Normal Note");
+    final controller = Get.put(NoteController());
+    controller.addNote("新建笔记", "assets/images/standard_note.png");
   }
 
   void _borderless() {
     debugPrint("Borderless Note");
+    final controller = Get.put(NoteController());
+    controller.addNote("新建笔记", "assets/images/standard_note.png");
   }
 
   void _pdf() {
     debugPrint("PDF Note");
+    final controller = Get.put(NoteController());
+    controller.addNote("新建笔记", "assets/images/standard_note.png");
   }
 }
