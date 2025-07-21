@@ -10,6 +10,8 @@ import 'Pages/canvas_page/pen_canvas.dart';
 import 'Pages/note_page/notepage.dart';
 import 'package:get/get.dart';
 import 'dart:ui' as ui;
+import 'package:echo_note/Pages/note_page/note.dart';
+import 'package:echo_note/Pages/note_page/note_controller.dart'; // 引入 NoteController
 
 void main() async {
   MultiCanvasController(tag: 0);
@@ -76,8 +78,27 @@ class MainApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system, // 跟随系统
-      // home: const CanvasPage(),
-      home: const NotePage(),
+      home: const NotePage(), // 显示 NotePage
+    );
+  }
+}
+
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // 删除 Get.put()，不要在 MainPage 中初始化 NoteController
+    return Scaffold(
+      appBar: AppBar(title: Text("笔记应用")),
+      body: Center(
+        child: Column(
+          children: [
+            // 直接显示 NotePage 相关内容
+            const Text("MainPage 内容"),
+          ],
+        ),
+      ),
     );
   }
 }
